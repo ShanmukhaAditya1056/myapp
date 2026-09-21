@@ -1,0 +1,45 @@
+name: Android Build
+
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: set up JDK 17
+      uses: actions/setup-java@v3
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+        cache: gradle
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '20'
+        cache: 'npm'
+        cache-dependency-path: 'mobile/package-lock.json'
+
+    - name: Install dependencies
+      working-directory: ./mobile
+      run: npm ci
+
+    - name: Grant execute permission for gradlew
+      working-directory: ./mobile/android
+      run: chmod +x gradlew
+
+    - name: Build Debug APK
+      working-directory: ./mobile/android
+      run: ./gradlew assembleDebug
+
+    - name: Upload APK Artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: LIFEOS-AI-App
+        path: mobile/android/app/build/outputs/apk/debug/app-debug.apk
