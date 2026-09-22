@@ -1,7 +1,7 @@
 const { OpenAI } = require('openai');
 
 const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
+  apiKey: process.env.OPENAI_API_KEY || 'placeholder_key_to_prevent_crash',
 });
 
 async function generateAIResponse(messages, model = 'gpt-4') {
